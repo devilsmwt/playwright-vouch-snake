@@ -1,0 +1,10 @@
+# Dependencies
+/node_modules
+
+# Build-in files
+/cucumber-report.html
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
