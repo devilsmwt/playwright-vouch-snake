@@ -22,7 +22,7 @@ export class GamePage {
   }
 
   async goto() {
-    // URL tempat game berjalan secara lokal
+    // URL where the game is running locally
     await this.page.goto('http://localhost:3456'); 
   }
 
@@ -59,39 +59,39 @@ export class GamePage {
   }
 
   async verifyGameIsPaused() {
-    // Tunggu sebentar untuk memastikan status jeda diterapkan
+    // Wait a moment to ensure the paused state is applied
     await this.page.waitForTimeout(100);
     const beforePauseScreenshot = await this.gameBoard.screenshot();
-    await this.page.waitForTimeout(200); // Waktu untuk beberapa frame game jika tidak dijeda
+    await this.page.waitForTimeout(200); // Time for a few game frames if not paused
     const afterPauseScreenshot = await this.gameBoard.screenshot();
     expect(afterPauseScreenshot).toEqual(beforePauseScreenshot);
   }
 
   async verifyGameIsResumed() {
-    // Tunggu sebentar untuk memastikan status lanjut diterapkan
+    // Wait a moment to ensure the resumed state is applied
     await this.page.waitForTimeout(100);
     const beforeResumeScreenshot = await this.gameBoard.screenshot();
-    await this.page.waitForTimeout(200); // Waktu yang cukup untuk ular bergerak
+    await this.page.waitForTimeout(200); // Enough time for the snake to move
     const afterResumeScreenshot = await this.gameBoard.screenshot();
     expect(afterResumeScreenshot).not.toEqual(beforeResumeScreenshot);
   }
 
   async forceGameOver() {
-    // Tekan panah kanan berkali-kali untuk menabrak dinding
+    // Press the right arrow repeatedly to hit the wall
     for (let i = 0; i < 25; i++) {
       await this.page.keyboard.press('ArrowRight');
-      // Beri sedikit jeda agar game bisa memproses gerakan
+      // Add a short delay for the game to process the movement
       await this.page.waitForTimeout(50);
     }
-    // Pastikan game over popup muncul dan tombol start aktif lagi, menandakan game over
+    // Ensure the game over popup appears and the start button is enabled again, indicating game over
     await expect(this.gameOverPopup).toBeVisible();
     await expect(this.startGameButton).toBeEnabled();
   }
 
   async verifyNewGameStarted() {
-    // Di game baru, skor harus kembali ke 0
+    // In a new game, the score should reset to 0
     await expect(this.scoreDisplay).toHaveText('0');
-    // Dan tombol pause harus terlihat
+    // And the pause button should be visible
     await expect(this.pauseGameButton).toBeVisible();
   }
 
@@ -108,25 +108,25 @@ export class GamePage {
   }
 
   async eatFood() {
-    // Dapatkan posisi kepala ular
+    // Get the snake head's position
     const snakeHead = await this.page.evaluate(() => (window as any).snake[0]);
 
-    // Pindahkan makanan ke satu kotak di sebelah kanan kepala ular
+    // Move the food to one square to the right of the snake's head
     await this.teleportFood(snakeHead.x + 10, snakeHead.y);
 
-    // Gerakkan ular ke kanan untuk memakan makanan
+    // Move the snake to the right to eat the food
     await this.page.keyboard.press('ArrowRight');
 
-    // Beri sedikit waktu agar game dapat memproses skor baru
+    // Allow some time for the game to process the new score
     await this.page.waitForTimeout(200);
   }
 
   async navigateToWall() {
-    // Arahkan ular ke kanan hingga menabrak dinding
+    // Direct the snake to the right until it hits a wall
     for (let i = 0; i < 50; i++) {
       await this.page.keyboard.press('ArrowRight');
       await this.page.waitForTimeout(50);
-      // Jika tombol start kembali aktif, berarti sudah game over
+      // If the start button becomes enabled again, it means game over
       if (await this.startGameButton.isEnabled()) {
         return;
       }
@@ -146,12 +146,12 @@ export class GamePage {
 
   async pressKey(key: string) {
     await this.page.keyboard.press(key);
-    // Beri waktu game untuk memproses input
+    // Allow time for the game to process the input
     await this.page.waitForTimeout(100);
   }
 
   async isSnakeVisible(): Promise<boolean> {
-    // Jika 'snake' tidak ada di window, berarti tidak terlihat
+    // If 'snake' is not on the window object, it's not visible
     return this.page.evaluate(() => (window as any).snake !== undefined);
   }
 }

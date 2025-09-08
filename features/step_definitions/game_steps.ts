@@ -119,7 +119,7 @@ When('I press the {string} key', async (keyName: string) => {
 
 Then('the snake should continue moving down', async () => {
   const initialPosition = await gamePage.getSnakePosition();
-  await gamePage.pressKey('ArrowDown'); // Tekan lagi untuk melihat pergerakan
+  await gamePage.pressKey('ArrowDown'); // Press again to observe movement
   const newPosition = await gamePage.getSnakePosition();
   expect(newPosition.y).toBeGreaterThan(initialPosition.y);
   expect(newPosition.x).toEqual(initialPosition.x);
